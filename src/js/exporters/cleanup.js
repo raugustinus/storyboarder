@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const trash = require('trash')
+const trash = require('../shared/trash')
 
 const boardModel = require('../models/board')
 const util = require('../utils')

@@ -1,4 +1,4 @@
-// npx parcel serve test/views/xr-server-client/index.html -d test/views/xr-server-client/dist -p 9966
+// npx parcel-bundler@1 serve test/views/xr-server-client/index.html -d test/views/xr-server-client/dist -p 9966
 
 const THREE = require('three')
 window.THREE = window.THREE || THREE

@@ -1,12 +1,25 @@
 # Notes for Developers
 
-Tested with node v6.1.0.
+Tested with node v16 (see `.nvmrc`), which matches the Node version embedded in the Electron release we ship.
+
+    $ nvm use
 
 ## Developing
 
     $ cd server && npm install && cd ..
     $ npm install
     $ npm start
+
+## Apple Silicon
+
+Everything installs and runs natively on arm64 Macs (no Rosetta needed):
+
+- Electron, `ffmpeg-static` and `electron-builder`'s `app-builder` all download arm64 binaries when installed from an arm64 Node.
+- Moving files to the Trash goes through Electron's `shell.trashItem` (see `src/js/shared/trash.js`) instead of the `trash` package, whose macOS helper binary is x86_64-only.
+- There is no `postinstall: electron-builder install-app-deps` hook any more. There are no native Node addons left in `dependencies` (fsevents is N-API and ships universal prebuilds), and `electron-builder` rebuilds native modules itself when packaging. If you ever add a native dependency, run `npx electron-builder install-app-deps` after `npm install`.
+- `parcel-bundler` was dropped from `devDependencies` because its `deasync` dependency has no arm64 prebuild and fails to compile with modern Python. The two test views that used it (`test/views/xr-server-client`, `test/views/music-system`) can still be served with `npx parcel-bundler@1 serve ...`, see the comment at the top of each `index.js`.
+
+`npm run dist:mac` builds both arm64 and x64 apps. `ffmpeg-static` only ships one ffmpeg binary, chosen at install time, so `scripts/electron-builder-before-build.js` re-runs its install script with `npm_config_arch` set to the target architecture before each build. After a dist build the ffmpeg in `node_modules` matches whichever arch was built last; delete `node_modules/ffmpeg-static/ffmpeg` and run `npm rebuild ffmpeg-static` if you need your host's arch back for `npm start` (the install script is a no-op while a binary exists).
 
 ## Loading Storyboards via Command Line
 
@@ -36,17 +49,16 @@ To compile only (Shot Generator, Shot Explorer, and Shot Generator XR)
 
     $ npm run build
 
-To compile and build Storyboarder.app:
+To compile and build Storyboarder.app (`electron-builder` is a local devDependency, no global install needed):
 
-    $ sudo npm install -g electron-builder
-    $ npm run dist:mac    # Mac only
+    $ npm run dist:mac    # Mac only (arm64 + x64)
     $ npm run dist:win    # Windows only
     $ npm run dist:linux  # Linux only
     $ npm run dist        # All Platforms
 
 For quick testing:
 
-    $ CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build -m --arm64 --x64 --dir
+    $ CSC_IDENTITY_AUTO_DISCOVERY=false npx electron-builder build -m --arm64 --x64 --dir
 
 - `CSC_IDENTITY_AUTO_DISCOVERY=false` prevents Code Signing and Notarizing
 - `--dir` prevents packaging

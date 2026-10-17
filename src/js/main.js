@@ -5,7 +5,7 @@ const {app, ipcMain, BrowserWindow, dialog, powerSaveBlocker} = electron = requi
 const fs = require('fs-extra')
 const path = require('path')
 const isDev = require('electron-is-dev')
-const trash = require('trash')
+const trash = require('./shared/trash')
 const chokidar = require('chokidar')
 const os = require('os')
 const log = require('./shared/storyboarder-electron-log')

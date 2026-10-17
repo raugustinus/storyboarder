@@ -6,7 +6,7 @@ const moment = require('moment')
 const { machineIdSync } = require('node-machine-id')
 const fs = require('fs')
 const path = require('path')
-const trash = require('trash')
+const trash = require('../../shared/trash')
 
 const configureStore = require('../src/js/shared/store/configureStore')
 const store = configureStore()

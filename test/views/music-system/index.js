@@ -1,4 +1,4 @@
-// npx parcel serve test/views/music-system/index.html src/data/shot-generator/xr/snd/** -d test/views/music-system/dist
+// npx parcel-bundler@1 serve test/views/music-system/index.html src/data/shot-generator/xr/snd/** -d test/views/music-system/dist
 // open http://localhost:1234/test/views/music-system/index.html
 
 const Tone = require('tone')
